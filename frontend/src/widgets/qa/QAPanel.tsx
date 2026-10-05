@@ -84,11 +84,15 @@ export const QAPanel: React.FC<{ caseId: string }> = ({ caseId }) => {
                                     
                                     {qa.citations && qa.citations.length > 0 && (
                                         <div className="mt-3 pt-3 border-t border-gray-300 dark:border-gray-600">
-                                            <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Citations:</p>
+                                            <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-2">Sources Referenced:</p>
                                             <div className="flex flex-wrap gap-2">
                                                 {qa.citations.map((cit, idx) => (
-                                                    <span key={idx} className="inline-block bg-white dark:bg-gray-600 border border-gray-200 dark:border-gray-500 rounded px-2 py-1 text-xs text-blue-600 dark:text-blue-400 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-500">
-                                                        [{idx + 1}] Source
+                                                    <span 
+                                                        key={idx} 
+                                                        title={`Chunk ID: ${cit}`}
+                                                        className="inline-flex items-center justify-center min-w-[24px] h-[24px] bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-full text-xs font-medium text-blue-700 dark:text-blue-400 cursor-help hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors px-2"
+                                                    >
+                                                        {idx + 1}
                                                     </span>
                                                 ))}
                                             </div>

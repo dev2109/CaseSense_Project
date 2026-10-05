@@ -38,7 +38,6 @@ export const CaseDetail: React.FC = () => {
             <header className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md mb-8">
                 <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{caseData.title}</h1>
                 <p className="text-gray-500 mt-2">
-                    Case ID: {caseData.id} <br />
                     Created: {new Date(caseData.created_at).toLocaleString()}
                 </p>
             </header>
