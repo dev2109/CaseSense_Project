@@ -56,7 +56,7 @@ export const CaseDocumentsPanel: React.FC<{ caseId: string }> = ({ caseId }) => 
                 ) : (
                     <ul className="space-y-3">
                         {documents.map(doc => (
-                            <li key={doc.id} className="flex items-start p-3 bg-gray-50 dark:bg-gray-750 border border-gray-100 dark:border-gray-700 rounded-md">
+                            <li key={doc.id} className="flex items-start p-3 bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-700 rounded-md">
                                 <FileText className="text-gray-400 mr-3 mt-1 flex-shrink-0" />
                                 <div className="flex-1 min-w-0">
                                     <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">

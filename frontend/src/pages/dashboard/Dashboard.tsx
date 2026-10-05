@@ -54,7 +54,7 @@ export const Dashboard: React.FC = () => {
                             <li key={c.id}>
                                 <Link 
                                     to={`/case/${c.id}`} 
-                                    className="flex items-center p-4 hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors"
+                                    className="flex items-center p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                                 >
                                     <div className="flex-shrink-0 mr-4 text-blue-500">
                                         <Folder size={24} />
