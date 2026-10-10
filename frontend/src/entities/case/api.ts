@@ -14,4 +14,7 @@ export const caseApi = {
         const response = await apiClient.post('/cases/', data);
         return response.data;
     },
+    delete: async (id: string): Promise<void> => {
+        await apiClient.delete(`/cases/${id}`);
+    },
 };
