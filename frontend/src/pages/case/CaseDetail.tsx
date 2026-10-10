@@ -5,12 +5,15 @@ import type { Case } from '../../entities/case/model';
 import { ArrowLeft, Trash2, AlertTriangle } from 'lucide-react';
 import { CaseDocumentsPanel } from '../../widgets/document/CaseDocumentsPanel';
 import { QAPanel } from '../../widgets/qa/QAPanel';
+import { useLoader } from '../../app/providers/LoaderProvider';
 
 export const CaseDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const [caseData, setCaseData] = useState<Case | null>(null);
     const [loading, setLoading] = useState(true);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const { isLoading, showLoader, hideLoader } = useLoader();
     const [isDeleting, setIsDeleting] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
 
@@ -25,6 +28,7 @@ export const CaseDetail: React.FC = () => {
 
     const handleDelete = async () => {
         if (!id) return;
+        showLoader();
         setIsDeleting(true);
         try {
             await caseApi.delete(id);
@@ -32,6 +36,9 @@ export const CaseDetail: React.FC = () => {
         } catch (error) {
             console.error("Failed to delete case", error);
             alert("Failed to delete the case.");
+            setShowDeleteModal(false);
+        } finally {
+            hideLoader();
             setIsDeleting(false);
             setShowDeleteModal(false);
         }
@@ -95,6 +102,7 @@ export const CaseDetail: React.FC = () => {
                         <div className="flex gap-3">
                             <button
                                 onClick={() => setShowDeleteModal(false)}
+                                disabled={isLoading}
                                 disabled={isDeleting}
                                 className="flex-1 px-4 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-medium rounded-lg transition-colors"
                             >
@@ -102,6 +110,10 @@ export const CaseDetail: React.FC = () => {
                             </button>
                             <button
                                 onClick={handleDelete}
+                                disabled={isLoading}
+                                className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50 flex items-center justify-center"
+                            >
+                                Yes, delete it
                                 disabled={isDeleting}
                                 className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50 flex items-center justify-center"
                             >

@@ -1,7 +1,8 @@
 import React, { useRef, useState } from 'react';
 import { documentApi } from '../../entities/document/api';
 import type { Document } from '../../entities/document/model';
-import { Upload, File as FileIcon, X, Loader2 } from 'lucide-react';
+import { Upload, File as FileIcon, X } from 'lucide-react';
+import { useLoader } from '../../app/providers/LoaderProvider';
 
 interface UploadDocumentFormProps {
     caseId: string;
@@ -10,9 +11,9 @@ interface UploadDocumentFormProps {
 
 export const UploadDocumentForm: React.FC<UploadDocumentFormProps> = ({ caseId, onUploadComplete }) => {
     const [file, setFile] = useState<File | null>(null);
-    const [uploading, setUploading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const { showLoader, hideLoader } = useLoader();
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setError(null);
@@ -30,7 +31,7 @@ export const UploadDocumentForm: React.FC<UploadDocumentFormProps> = ({ caseId, 
 
     const handleUpload = async () => {
         if (!file) return;
-        setUploading(true);
+        showLoader();
         setError(null);
         try {
             const newDoc = await documentApi.uploadDocument(caseId, file);
@@ -44,7 +45,7 @@ export const UploadDocumentForm: React.FC<UploadDocumentFormProps> = ({ caseId, 
             console.error("Upload failed", err);
             setError(err.response?.data?.detail || "Upload failed. Please try again.");
         } finally {
-            setUploading(false);
+            hideLoader();
         }
     };
 
@@ -81,24 +82,15 @@ export const UploadDocumentForm: React.FC<UploadDocumentFormProps> = ({ caseId, 
                         <button 
                             onClick={() => { setFile(null); setError(null); }}
                             className="text-gray-500 hover:text-red-500 ml-auto"
-                            disabled={uploading}
                         >
                             <X size={18} />
                         </button>
                     </div>
                     <button
                         onClick={handleUpload}
-                        disabled={uploading}
-                        className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 transition-colors w-full flex items-center justify-center gap-2"
+                        className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors w-full flex items-center justify-center gap-2"
                     >
-                        {uploading ? (
-                            <>
-                                <Loader2 size={18} className="animate-spin" />
-                                Processing Document...
-                            </>
-                        ) : (
-                            'Upload & Extract Text'
-                        )}
+                        Upload & Extract Text
                     </button>
                 </div>
             )}

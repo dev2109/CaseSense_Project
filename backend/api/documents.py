@@ -83,3 +83,17 @@ async def upload_document(case_id: str, file: UploadFile = File(...), db: Sessio
     db.refresh(db_doc)
     
     return db_doc
+
+@router.delete("/{document_id}", status_code=204)
+def delete_document(case_id: str, document_id: str, db: Session = Depends(get_db)):
+    db_case = db.query(Case).filter(Case.id == case_id).first()
+    if not db_case:
+        raise HTTPException(status_code=404, detail="Case not found")
+        
+    db_doc = db.query(Document).filter(Document.id == document_id, Document.case_id == case_id).first()
+    if not db_doc:
+        raise HTTPException(status_code=404, detail="Document not found")
+        
+    db.delete(db_doc)
+    db.commit()
+    return None
