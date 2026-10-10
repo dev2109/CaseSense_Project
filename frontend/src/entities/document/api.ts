@@ -17,4 +17,7 @@ export const documentApi = {
         });
         return response.data;
     },
+    deleteDocument: async (caseId: string, documentId: string): Promise<void> => {
+        await apiClient.delete(`/cases/${caseId}/documents/${documentId}`);
+    },
 };

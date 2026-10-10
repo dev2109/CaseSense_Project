@@ -1,14 +1,15 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { qaApi } from '../../entities/qa/api';
 import type { QAResponse } from '../../entities/qa/model';
-import { Send, User, Bot, Loader2 } from 'lucide-react';
+import { Send, User, Bot } from 'lucide-react';
+import { useLoader } from '../../app/providers/LoaderProvider';
 
 export const QAPanel: React.FC<{ caseId: string }> = ({ caseId }) => {
     const [history, setHistory] = useState<QAResponse[]>([]);
     const [question, setQuestion] = useState('');
-    const [loading, setLoading] = useState(false);
     const [initLoading, setInitLoading] = useState(true);
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const { isLoading, showLoader, hideLoader } = useLoader();
 
     useEffect(() => {
         loadHistory();
@@ -16,7 +17,7 @@ export const QAPanel: React.FC<{ caseId: string }> = ({ caseId }) => {
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, [history, loading]);
+    }, [history, isLoading]);
 
     const loadHistory = async () => {
         try {
@@ -31,11 +32,11 @@ export const QAPanel: React.FC<{ caseId: string }> = ({ caseId }) => {
 
     const handleAsk = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!question.trim() || loading) return;
+        if (!question.trim() || isLoading) return;
 
         const q = question.trim();
         setQuestion('');
-        setLoading(true);
+        showLoader();
 
         try {
             const result = await qaApi.askQuestion(caseId, { question: q });
@@ -44,7 +45,7 @@ export const QAPanel: React.FC<{ caseId: string }> = ({ caseId }) => {
             console.error("Failed to ask question", error);
             alert(error.response?.data?.detail || "Failed to get an answer.");
         } finally {
-            setLoading(false);
+            hideLoader();
         }
     };
 
@@ -57,7 +58,7 @@ export const QAPanel: React.FC<{ caseId: string }> = ({ caseId }) => {
             <div className="flex-1 p-4 overflow-y-auto space-y-6">
                 {initLoading ? (
                     <div className="text-center text-gray-500 mt-10">Loading chat history...</div>
-                ) : history.length === 0 && !loading ? (
+                ) : history.length === 0 && !isLoading ? (
                     <div className="text-center text-gray-500 mt-10">
                         No questions asked yet. Ask a question about the uploaded documents!
                     </div>
@@ -103,18 +104,6 @@ export const QAPanel: React.FC<{ caseId: string }> = ({ caseId }) => {
                         </div>
                     ))
                 )}
-                
-                {loading && (
-                    <div className="flex items-start gap-3">
-                        <div className="bg-green-100 text-green-700 p-2 rounded-full flex-shrink-0">
-                            <Bot size={20} />
-                        </div>
-                        <div className="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 p-4 rounded-lg rounded-tl-none flex items-center gap-2">
-                            <Loader2 size={16} className="animate-spin" />
-                            <span className="text-sm">Searching documents & thinking...</span>
-                        </div>
-                    </div>
-                )}
                 <div ref={messagesEndRef} />
             </div>
 
@@ -125,12 +114,12 @@ export const QAPanel: React.FC<{ caseId: string }> = ({ caseId }) => {
                         value={question}
                         onChange={(e) => setQuestion(e.target.value)}
                         placeholder="Ask a question about the case documents..."
-                        disabled={loading}
+                        disabled={isLoading}
                         className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
                     />
                     <button
                         type="submit"
-                        disabled={loading || !question.trim()}
+                        disabled={isLoading || !question.trim()}
                         className="bg-blue-600 text-white p-2 px-4 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center justify-center"
                     >
                         <Send size={20} />

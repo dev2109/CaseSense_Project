@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { caseApi } from '../../entities/case/api';
 import type { Case } from '../../entities/case/model';
 import { Plus } from 'lucide-react';
+import { useLoader } from '../../app/providers/LoaderProvider';
 
 interface CreateCaseFormProps {
     onCaseCreated: (newCase: Case) => void;
@@ -9,12 +10,12 @@ interface CreateCaseFormProps {
 
 export const CreateCaseForm: React.FC<CreateCaseFormProps> = ({ onCaseCreated }) => {
     const [title, setTitle] = useState('');
-    const [loading, setLoading] = useState(false);
+    const { isLoading, showLoader, hideLoader } = useLoader();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!title.trim()) return;
-        setLoading(true);
+        if (!title.trim() || isLoading) return;
+        showLoader();
         try {
             const newCase = await caseApi.create({ title: title.trim() });
             onCaseCreated(newCase);
@@ -23,7 +24,7 @@ export const CreateCaseForm: React.FC<CreateCaseFormProps> = ({ onCaseCreated })
             console.error("Failed to create case", error);
             alert("Failed to create case");
         } finally {
-            setLoading(false);
+            hideLoader();
         }
     };
 
@@ -37,15 +38,15 @@ export const CreateCaseForm: React.FC<CreateCaseFormProps> = ({ onCaseCreated })
                     onChange={(e) => setTitle(e.target.value)}
                     placeholder="Enter case title..."
                     className="flex-1 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                    disabled={loading}
+                    disabled={isLoading}
                 />
                 <button
                     type="submit"
-                    disabled={loading || !title.trim()}
+                    disabled={isLoading || !title.trim()}
                     className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 transition-colors"
                 >
                     <Plus size={20} />
-                    {loading ? 'Creating...' : 'Create Case'}
+                    Create Case
                 </button>
             </div>
         </form>
