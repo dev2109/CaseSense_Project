@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { documentApi } from '../../entities/document/api';
 import type { Document } from '../../entities/document/model';
-import { Upload, File as FileIcon, X } from 'lucide-react';
+import { Upload, File as FileIcon, X, Loader2 } from 'lucide-react';
 
 interface UploadDocumentFormProps {
     caseId: string;
@@ -89,9 +89,16 @@ export const UploadDocumentForm: React.FC<UploadDocumentFormProps> = ({ caseId, 
                     <button
                         onClick={handleUpload}
                         disabled={uploading}
-                        className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 transition-colors w-full"
+                        className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 transition-colors w-full flex items-center justify-center gap-2"
                     >
-                        {uploading ? 'Processing...' : 'Upload & Extract Text'}
+                        {uploading ? (
+                            <>
+                                <Loader2 size={18} className="animate-spin" />
+                                Processing Document...
+                            </>
+                        ) : (
+                            'Upload & Extract Text'
+                        )}
                     </button>
                 </div>
             )}
