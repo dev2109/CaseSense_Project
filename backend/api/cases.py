@@ -26,3 +26,13 @@ def get_case(case_id: str, db: Session = Depends(get_db)):
     if not db_case:
         raise HTTPException(status_code=404, detail="Case not found")
     return db_case
+
+@router.delete("/{case_id}", status_code=204)
+def delete_case(case_id: str, db: Session = Depends(get_db)):
+    db_case = db.query(Case).filter(Case.id == case_id).first()
+    if not db_case:
+        raise HTTPException(status_code=404, detail="Case not found")
+    
+    db.delete(db_case)
+    db.commit()
+    return None
